@@ -31,6 +31,7 @@ import axios from 'axios';
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 };
+const tempUrl = "http://localhost:3000"
 
 export default {
   name: 'Login',
@@ -55,7 +56,7 @@ export default {
       this.waitSpinner = true;
       sleep(1000).then(() => { //temporaly show the badge
         this.JSONToSend = {data:{type: "account", id: this.id, attributes: {username: this.username, password: this.password}}};
-        this.url = "http://192.168.6.166:3000/login";
+        this.url = tempUrl + "/login";
         axios.post(this.url,
           JSON.stringify(this.JSONToSend),
           {
@@ -66,7 +67,7 @@ export default {
           }
         ).then( (res) => {
           if(res.status === 200){
-            this.$store.state.jsonProductUser=res.data;
+            this.$store.state.jsonProductUser=res.data.included;
             this.$store.state.username = this.username; //memorize user actually logged
             var token = res.data.data.attributes.token; //fake token
             localStorage.user = this.username;

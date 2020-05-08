@@ -51,7 +51,7 @@ export default {
       var user = localStorage.user;
       //call server (user, token)
       this.JSONToSend = {data:{type: "userRequest", id: 1, attributes: {username: user, token: cookiesToken}}};
-      this.url = "http://192.168.6.166:3000/retrieveResource?resource=product"; //TO DO: rispetta jsonapi?
+      this.url = "http://localhost:3000/retrieveResource?resource=product";
       axios.post(this.url,
         JSON.stringify(this.JSONToSend),
         {
@@ -62,12 +62,14 @@ export default {
         }
       ).then( res => {
         if(res.status === 200) {
-          this.$store.state.jsonProductUser=res.data;
+      window.console.log(res.data.included)
+          this.$store.state.jsonProductUser=res.data.included;
           this.$store.state.username = user;// correct?
           //this.$router.push('/home');
         }
       }).then( () => {
-        this.product = this.$store.state.jsonProductUser.included;
+        this.product = this.$store.state.jsonProductUser;
+        window.console.log(this.product);
       }).catch( err => {
         window.console.log("(menu) product not obtained, beforeMount: " + err); // TO DO: show some message into the page or redirect, for now redirect
         this.$router.push("/login");
