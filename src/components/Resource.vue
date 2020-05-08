@@ -1,75 +1,81 @@
 <template>
 <div id="resource">
-  <Modal v-if="showModal" @close="showModal = false"></Modal>
-
-  <div class="btn-group btn-group-toggle" data-toggle="buttons">
-    <label v-bind:class="{ 'btn btn-primary active': sel==='table' , 'btn btn-secondary': sel!=='table' }">
-      <input type="radio" name="tabs" id="tab1" autocomplete="off" checked value="table" v-model="sel"> Costi
-    </label>
-    <label v-bind:class="{ 'btn btn-primary active': sel==='project' , 'btn btn-secondary': sel!=='project' }">
-      <input type="radio" name="tabs" id="tab2" autocomplete="off" value="project" v-model="sel"> Progetti
-    </label>
-    <label v-bind:class="{ 'btn btn-primary active': sel==='exp' , 'btn btn-secondary': sel!=='exp' }">
-      <input type="radio" name="tabs" id="tab3" autocomplete="off" value="exp" v-model="sel" > Esperienze
-    </label>
+<div class="btn-group mb-3" role="group">
+  <button
+    v-for="tab in tabs"
+    v-bind:key="tab[1]"
+    v-bind:class="{'btn btn-secondary rounded-0 shadow-none border-light' : currentTab !==  tab[1], 'btn btn-primary rounded-0 shadow-none': currentTab === tab[1] }"
+    v-on:click="currentTab = tab[1]"
+  ><span class="pr-1" v-html="tab[0]"></span>{{tab[1]}}
+  </button>
   </div>
-
-  <div v-show="sel === 'table'">
-
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="row" v-for="head in headArr" v-bind:key="head.id">{{ head }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td v-for="data in dataArr" v-bind:key="data.id">{{ data }}</td>
-          <!-- chiamare funzione con click che formatta anche dati detailsRes prima di showModal-------------------------------------->
-          <td><button type="button" class="btn btn-info" id="show-modal" @click="showModal = true">Dettagli</button></td>
-        </tr>
-      </tbody>
-    </table>
-    
-  </div>
-  <div v-show="sel === 'project'">
-    Project
-  </div>
-  <div v-show="sel === 'exp'">
-    Experience
-  </div>
+  <transition name="component-fade" mode="out-in">
+    <component
+      v-bind:is="currentTabComponent"
+      class="tab"
+    ></component>
+  </transition>
 
 </div>
 </template>
 
 <script>
-import Modal from './Modal'
+
+import costs from './tab-component/Costs';
+import registry from './tab-component/Registry';
+import projects from './tab-component/Projects';
+import experiences from './tab-component/Experiences';
+import certifications from './tab-component/Certifications';
 
 export default {
   name: 'resource',
   components: {
-    Modal
+    costs,
+    projects,
+    experiences,
+    registry,
+    certifications
   },
-  data(){
+  data() {
     return{
-      infoResource: this.$store.state.infoResource,
-      showModal: false,
-      dataArr:[],
-      headArr:[],
-      sel:"table"
+      currentTab: 'Costs',
+      tabs: [
+        ['<i class="material-icons"> face </i>', 'Registry'],
+        ['<i class="material-icons">work</i>', 'Projects'],
+        ['<i class="material-icons"> euro_symbol</i>', 'Costs'],
+        ['<i class="material-icons">public</i>', 'Experiences'],
+        ['<i class="material-icons">school</i>', 'Certifications']
+            ]
     }
   },
-  mounted(){
-    for(var i in this.infoResource.data.propertie){
-      this.headArr.push(i);
+  computed: {
+    currentTabComponent: function () {
+      return this.currentTab.toLowerCase()
     }
-
-    for(var j in this.infoResource.data.propertie){
-      this.dataArr.push(this.infoResource.data.propertie[j]);
-    }
-
-    this.$store.state.detailsRes = this.dataArr.pop();
-  
   }
 }
 </script>
+
+<style scoped>
+  .component-fade-enter-active, .component-fade-leave-active {
+    transition: opacity .2s ease;
+  }
+  .component-fade-enter, .component-fade-leave-to {
+    opacity: 0;
+  }
+  button{
+    display: inline-flex;
+    border: none;
+  }
+  @media(max-width: 420px){
+    div#resource {
+      /*overflow-y: scroll;
+      height: 100%;*/
+      padding-left: 0px;
+    }
+    .btn-group{
+      overflow-x: scroll;
+      width: -webkit-fill-available;
+    }
+  }
+</style>

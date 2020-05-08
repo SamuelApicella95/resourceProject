@@ -5,10 +5,11 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    username: '',
-    password: 'sam',
+    /*username: '',
+    password: 'sam',*/
     detailsRes: '',
-    auth: false,
-    infoResource: ''
+    infoResource: '',
+    registryRes: {},
+    jsonProductUser: ''
   }
 })

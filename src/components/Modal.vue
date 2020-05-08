@@ -3,70 +3,113 @@
     <transition name="Modal">
       <div class="modal-mask">
         <div class="modal-wrapper">
-          <div class="modal-container">
+          <div v-bind:class="{'modal-container' : $mq !== 'sm', 'modal-container rounded-circle shadow-none': $mq === 'sm' }">
+              
+            <button type="button" class="close" aria-label="Close" @click="$emit('close')">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <slot name="body">
+              
+              <!-- "desktop table"  -->
+              <table class = "table table-striped" v-if="$mq !== 'sm'">
+                <thead>
+                  <tr>
+                    <th scope="row" v-for="head in headArr" v-bind:key="head.id">{{ head }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td scope ="row">Retribuzioni</td>
+                    <td v-for="data in copyDetail" v-bind:key="data.id">{{data.retribuzioni}}</td>
+                  </tr>
+                  <tr>
+                    <td scope ="row">Inail</td>
+                    <td v-for="data in copyDetail" v-bind:key="data.id">{{data.inail}}</td>
+                  </tr>
+                  <tr>
+                    <td scope ="row">Contributivo</td>
+                    <td v-for="data in copyDetail" v-bind:key="data.id">{{data.contributivo}}</td>
+                  </tr>
+                  <tr>
+                    <td scope ="row">Totale</td>
+                    <td v-for="data in copyDetail" v-bind:key="data.id">{{data.totale}}</td>
+                  </tr>
+                </tbody>
+              </table>
+              
 
-            <div class="modal-body">
-              <slot name="body">
-                <table class = "table">
-                  <thead>
+
+              <table class = "table table-sm table-dark" v-if="$mq === 'sm'">
+                <tbody>
+                  <div v-for="data in copyDetail" v-bind:key="data.id" >
                     <tr>
-                      <th scope="row" v-for="head in headArr" v-bind:key="head.id">{{ head }}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td scope ="row">Retribuzioni</td>
-                      <td v-for="data in this.$store.state.detailsRes" v-bind:key="data.id">{{data.retribuzioni}}</td>
+                      <td>
+                        {{ data.tipoContributo }}
+                      </td>
                     </tr>
                     <tr>
-                      <td scope ="row">Inail</td>
-                      <td v-for="data in this.$store.state.detailsRes" v-bind:key="data.id">{{data.inail}}</td>
+                      <td> Retribuzioni </td>
+                      <td>{{ data.retribuzioni }}</td>
                     </tr>
                     <tr>
-                      <td scope ="row">Contributivo</td>
-                      <td v-for="data in this.$store.state.detailsRes" v-bind:key="data.id">{{data.contributivo}}</td>
+                      <td> Inail </td>
+                      <td>{{ data.inail }}</td>
                     </tr>
                     <tr>
-                      <td scope ="row">Totale</td>
-                      <td v-for="data in this.$store.state.detailsRes" v-bind:key="data.id">{{data.totale}}</td>
+                      <td> Contributivo </td>
+                      <td>{{ data.contributivo }}</td>
                     </tr>
-                  </tbody>
-                </table>
-                <!--<button class="modal-default-button" @click="$emit('close')">
-                  OK
-                </button>-->
-                <button type="button" class="modal-default-button btn btn-info" @click="$emit('close')">Ok</button>
+                    <tr>
+                      <td> Totale </td>
+                      <td>{{ data.totale }}</td>
+                    </tr>
+                  </div>
+                </tbody>
+              </table>
+              
               </slot>
-
             </div>
-
           </div>
         </div>
-      </div>
     </transition>
   </div>
 </template>
 
 
 <script>
+import VueMq from 'vue-mq'
+import Vue from 'vue'
+
+Vue.use(VueMq, {
+  breakpoints: { // default breakpoints - customize this
+    sm: 450,
+    md: 1250,
+    lg: Infinity,
+  },
+  defaultBreakpoint: 'sm' // customize this for SSR
+})
 
 export default {
   name: 'Modal',
   data () {
     return {
-      headArr: []
+      headArr: [],
+      copyDetail: this.$store.state.detailsRes
     }
   },
   mounted()  {
       this.headArr.push("");
-
       for(var i in this.$store.state.detailsRes){
         this.headArr.push(this.$store.state.detailsRes[i].tipoContributo);
+        //rounding values
+        var copyDetail = this.$store.state.detailsRes;
+        copyDetail[i].retribuzioni = Number((this.$store.state.detailsRes[i].retribuzioni)).toFixed(2);
+        copyDetail[i].inail = Number((this.$store.state.detailsRes[i].inail)).toFixed(2);
+        copyDetail[i].contributivo = Number((this.$store.state.detailsRes[i].contributivo)).toFixed(2);
+        copyDetail[i].totale = Number((this.$store.state.detailsRes[i].totale)).toFixed(2);
       }
-
   }
 }
-
 
 </script>
 
@@ -93,23 +136,23 @@ export default {
 }
 
 .modal-container {
-  width: 90%;
+  width: min-content;
   margin: 0px auto;
-  padding: 20px 30px;
-  background-color: #fff;
+  padding: unset;
+  background-color: #e0e0e0;
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
   transition: all .3s ease;
   font-family: Helvetica, Arial, sans-serif;
 }
-
 .modal-header h3 {
   margin-top: 0;
   color: #42b983;
 }
 
 .modal-body {
-  margin: 20px 0;
+  margin: unset;
+  padding: unset;
 }
 
 .modal-default-button {
@@ -131,6 +174,24 @@ export default {
 
 .modal-leave-active {
   opacity: 0;
+}
+@media (max-width: 430px) {
+  button.close {
+    padding-right: 46%;
+    padding-left: 46%;
+  }
+  .table{
+    font-size: smaller;
+  }
+  .modal-container{
+    background-color: #c5291a;
+  }
+}
+@media (min-width: 430px) {
+  button.close {
+    padding-right: 2%;
+    padding-top: 1%;
+  } 
 }
 
 .modal-enter .modal-container,

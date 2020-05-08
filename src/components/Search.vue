@@ -3,31 +3,25 @@
   <div class="container-fluid">
     <div class="col">
       <form class="d-flex align-items-center flex-column bd-highlight mb-3">
-        <h4><span class="badge badge-pill badge-primary">Search</span></h4>
-        <div class="input-group md-3">
+        <h3><span class="badge badge-pill badge-primary mb-2 pb-2">Search</span></h3>
+        <div class="input-group md-3 m-2">
           <span class="input-group-text" id="basic-addon1">Month</span>
           <input v-model="month">
         </div>
-        <br>
-        <div class="input-group md-3">
+        <div class="input-group md-3 m-2">
           <span class="input-group-text" id="basic-addon1">Year</span>
           <input v-model="year">
         </div>
-        <br>
-        <div class="input-group md-3">
+        <div class="input-group md-3 m-2">
           <span class="input-group-text" id="basic-addon1">Resource</span>
           <input v-model="resource">
         </div>
-        <br>
-
-        <button type="button" class="btn btn-primary" id="btn-search" v-on:click="Search"><i class="material-icons">search</i></button>
-
-      <span class="badge badge-danger">{{error}}</span>
+        <button type="button" class="btn btn-primary m-3 ripple" id="btn-search" v-on:click="Search"><i class="material-icons">search</i></button>
+        <span class="badge badge-danger m-3">{{error}}</span>
+        <div class="spinner-border text-primary m-3" role="status" v-if="showLoad">
+          <span class="sr-only">Loading...</span>
+        </div>
       </form>
-    </div>
-
-    <div v-if="showLoad">
-      <span class="badge badge-pill badge-secondary">Loading ...</span>
     </div>
   </div>
 </div>
@@ -53,13 +47,14 @@ export default {
     this.error = '';
     this.dataArr = [];
     this.headArr = [];
+    this.$store.state.detailsRes = '';
 
     /*axios.post('http://192.168.6.132:8080/hrcont/api/v1/getCostiRisorsaPeriodo',
               { codiceRisorsa: this.resource, anno: this.year, periodo: this.month, tipoPeriodo: "C" })*/
-    axios.get("./sample.json")
+    axios.get("/sample.json")
       .then( response => {
-        this.$store.state.infoResource = response;
         this.showLoad = true;
+        this.$store.state.infoResource = response;
       })
       .catch( error => {
         this.showLoad = false;
@@ -93,8 +88,42 @@ export default {
   }
   .Search {
     margin-top: 7%;
+    border-radius: 0;
   }
   #btn-search {
     padding-bottom: unset;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
   }
+  #btn-search:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.30);
+  }
+
+  /* Ripple effect */
+.ripple {
+  background-position: center;
+  transition: background 0.3s;
+}
+.ripple:hover {
+  background: #47a7f5 radial-gradient(circle, transparent 1%, #2174b8 1%) center/15000%;
+}
+.ripple:active {
+  background-color: #6eb9f7;
+  background-size: 100%;
+  transition: background 0s;
+}
+
+/* Button style material */
+/*button {
+  border: none;
+  border-radius: 2px;
+  padding: 12px 18px;
+  font-size: 16px;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: white;
+  background-color: #2196f3;
+  box-shadow: 0 0 4px #999;
+  outline: none;
+}*/
+
 </style>
