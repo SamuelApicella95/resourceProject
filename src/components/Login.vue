@@ -234,6 +234,7 @@ export default {
     background: url(https://test.life.ns12.it/wp-content/uploads/2019/11/sfondo_form.jpg) center bottom no-repeat;
     height: -webkit-fill-available;
     width: -webkit-fill-available;
+    background-size: cover;
     position: fixed;/*to avoid bug on background*/
   }
   @media (max-width: 560px) {
